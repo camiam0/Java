@@ -1,85 +1,100 @@
 package Lab5;
 
+import java.util.NoSuchElementException;
+
 public class LinkedList {
 
-    listNode first;
+    private ListNode firstNode;
+    private ListNode lastNode;
+    private String phonebook;
 
-    public void addNodeLast(String data) {
+    public LinkedList(String phoneBookName) {
 
-        listNode node = new listNode();
-        node.data = data;
-        node.next = null;
+        this.phonebook = phoneBookName;
+        firstNode = lastNode = null;
 
-        if (first == null) first = node;
+    } // end of LinkedList constructor
 
-        else { // traverse the LinkedList
+    public void insertAtFront(String in_LastName, String in_FirstName, String in_Address, int in_ZipCode, int in_PhoneNum, ListNode address_node) {
 
-            listNode n = first;
+        if(isEmpty()) {firstNode = lastNode = new ListNode(in_LastName, in_FirstName, in_Address, in_ZipCode, in_PhoneNum, address_node);}
+        
+        else{
+            
+            ListNode newNode = new ListNode(in_LastName, in_FirstName, in_Address, in_ZipCode, in_PhoneNum, address_node);
+            newNode.setNextNode(firstNode);
+            firstNode = newNode;
+        
+        }
 
-            while (n.next != null) n = n.next;
+    } // end of insertAtFront
 
-            n.next = node; // adds new node at the end of the list
+    public ListNode removeFromFront() throws NoSuchElementException {
+
+        if(isEmpty()) {throw new NoSuchElementException(phonebook + "is empty");}
+
+        ListNode removedItem = firstNode.getNextNode();
+
+        if(firstNode == lastNode) {firstNode = lastNode = null;}
+
+        else {firstNode = firstNode.nextNode;}
+
+        return removedItem;
+
+    } // end of removeFromFront
+
+    public ListNode removeAtIndex(int index) throws NoSuchElementException {
+
+        if(isEmpty()) {throw new NoSuchElementException(phonebook + "is empty");}
+
+        if(index < 0) {throw new IllegalArgumentException("Index cannot be negative");}
+
+        if(index == 0) {return removeFromFront();} // If index is 0, just remove from the front
+
+        ListNode previous = null;
+        ListNode current = firstNode;
+        int currentIndex = 0;
+
+        // Traverse the list to find the node at the specified index
+        while(current != null && currentIndex < index) {
+
+            previous = current;
+            current = current.getNextNode();
+            currentIndex++;
 
         }
 
-    } // end of addNodeLast
+        // If index is out of bounds
+        if(current == null) {throw new IndexOutOfBoundsException("Index " + index + " is out of bounds");}
 
-    public void addNodeAt(int index, String data) { // adds node at specified index
+        // Remove the node at the specified index
+        if(current == lastNode) {lastNode = previous;} // Update lastNode if the last node is being removed
 
-        listNode node = new listNode();
-        node.data = data;
-        node.next = null;
+        if(previous != null) {previous.setNextNode(current.getNextNode());} // Bypass the current node
+        else {firstNode = current.getNextNode();} // Update firstNode if the first node is being removed
 
-        listNode n = first;
+        return current;
 
-        if(index == 0) addNodeFirst(data); // if index is 0 (start) calls addNodeFirst
+    } // end of removeAtIndex
 
-        else for(int i = 0; i < index-1; i++) n = n.next; // otherwise traverse list to specified index
+    public boolean isEmpty() {return firstNode == null;}
 
-        node.next = n.next;
-        n.next = node;
+    public void print() {
 
-    } // end of addNodeAt
+        if(isEmpty()) {System.out.printf("Empty %s%n", phonebook); return;}
 
-    public void addNodeFirst(String data) {
+        System.out.printf("People in the %s: %n", phonebook);
+        ListNode current = firstNode;
 
-        listNode node = new listNode();
-        node.data = data;
-        node.next = null;
-        node.next = first;
-        first = node;
+        while(current != null) {
 
-    } // end of addNodeFirst
-
-    public void deleteNodeAt(int index) {
-
-        listNode n = first;
-        listNode n1 = null;
-
-        if(index == 0) first = first.next; // if index is 0 (start) changes first object to next object
-
-        else for(int i = 0; i < index-1; i++) n = n.next; // otherwise traverse the list
-
-        n1 = n.next;
-        n.next = n1.next; // removes object from list
-
-        n1 = null; // deletes removed object
-
-    } // end of deleteNodeAt
-
-    public void showData() { // prints LinkedList objects
-
-        listNode node = first;
-
-        while (node.next != null) {
-
-            System.out.println(node.data);
-            node = node.next;
+            System.out.printf("%s %s, %s, %d, %d%n", current.getLastName(), current.getFirstName(), current.getAddress(), current.getZipCode(), current.getPhoneNum());
+            current = current.nextNode;
 
         }
 
-        System.out.println(node.data); // prints last "null" node
+        System.out.println();
 
-    } // end of showData
+    } // end of print
 
 } // end of LinkedList class
